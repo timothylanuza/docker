@@ -32,6 +32,27 @@ services:
       - ./odoo/outputs:/var/log/odoo
 
     restart: unless-stopped
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf:/etc/nginx/conf.d
+      - ./nginx/inc:/etc/nginx/inc
+      - ./nginx/ssl:/etc/nginx/ssl
+      - ./nginx/certbot/www:/var/www/certbot
+      - ./nginx/certbot/conf:/etc/letsencrypt
+    depends_on:
+      - odoo
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./nginx/certbot/www:/var/www/certbot
+      - ./nginx/certbot/conf:/etc/letsencrypt
+
 volumes:
   db_data:
   odoo_data:
